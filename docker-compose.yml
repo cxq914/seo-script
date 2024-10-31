@@ -1,0 +1,26 @@
+version: "3.8" # Specifies the Docker Compose version
+
+services:
+  app: # Name of the service
+    build: . # Path to the Dockerfile (current directory in this case)
+    ports:
+      - "5003:5003" # Maps port 5000 of the container to port 5000 on the host
+    environment:
+      - API_KEY=${API_KEY} # Takes API_KEY from the host's environment or .env file
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - .:/app # Mounts the current directory to /app in the container
+    depends_on:
+      - db # Ensures this service starts only after the db service has started
+
+  db: # Another service, e.g., a database
+    image: postgres:13 # Uses a pre-built PostgreSQL image from Docker Hub
+    environment:
+      - POSTGRES_DB=exampledb # Environment variables for the db service
+      - POSTGRES_USER=exampleuser
+      - POSTGRES_PASSWORD=examplepass
+    volumes:
+      - db-data:/var/lib/postgresql/data # Persistent data storage for the database
+
+volumes:
+  db-data: # Defines a volume named db-data
